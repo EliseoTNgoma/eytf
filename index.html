@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Welcome | Eliseo Youth Trade Fair</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      color: white;
+      background: url('background.jpg') no-repeat center center/cover;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .overlay {
+      background-color: rgba(0, 0, 0, 0.6);
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    .welcome-container {
+      position: relative;
+      z-index: 2;
+      text-align: center;
+      max-width: 700px;
+      padding: 40px;
+      background-color: rgba(30, 64, 175, 0.85);
+      border-radius: 20px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.3);
+    }
+
+    .host-image {
+      width: 150px;
+      height: 150px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 4px solid white;
+      margin-bottom: 20px;
+    }
+
+    h1 {
+      margin: 0 0 10px;
+      font-size: 36px;
+    }
+
+    p {
+      font-size: 18px;
+      line-height: 1.6;
+    }
+
+    .enter-button {
+      margin-top: 30px;
+      padding: 12px 25px;
+      background-color: #10b981;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      color: white;
+      transition: background 0.3s;
+    }
+
+    .enter-button:hover {
+      background-color: #059669;
+    }
+  </style>
+</head>
+<body>
+  <div class="overlay"></div>
+  <div class="welcome-container">
+    <img src="ngoma.jpg" alt="Host Photo" class="host-image" />
+    <h1>Welcome to the Eliseo Youth Trade Fair</h1>
+    <p>
+      Discover innovation, youth entrepreneurship, and trade opportunities. <br/>
+      Join us for inspiring talks, exhibitions, and networking that will shape the future.
+    </p>
+    <button class="enter-button" onclick="window.location.href='payment.html'">Enter Fair</button>
+  </div>
+</body>
+</html>
