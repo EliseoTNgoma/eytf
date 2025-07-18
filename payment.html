@@ -8,19 +8,19 @@
   <style>
     body {
       font-family: Arial, sans-serif;
-      background: #e0f2fe; /* Lightened background */
+      background: #e0f2fe;
       display: flex;
-      justify-content: center;
+      flex-direction: column;
       align-items: center;
-      height: 100vh;
+      padding-top: 30px;
     }
-    .payment-container {
+    .payment-container, .ticket-container {
       background: white;
       padding: 30px;
       border-radius: 10px;
       box-shadow: 0 5px 15px rgba(0,0,0,0.1);
       width: 400px;
-      position: relative;
+      margin-bottom: 30px;
     }
     h2 {
       text-align: center;
@@ -49,16 +49,21 @@
       border-radius: 5px;
       display: none;
     }
-    .success {
-      background-color: #d1fae5;
-      color: #065f46;
+    .success { background-color: #d1fae5; color: #065f46; }
+    .error { background-color: #fee2e2; color: #991b1b; }
+    .ticket-container {
+      display: none;
+      border-left: 5px solid #2563eb;
     }
-    .error {
-      background-color: #fee2e2;
-      color: #991b1b;
+    .ticket-container h3 {
+      color: #2563eb;
+      text-align: center;
+    }
+    .ticket-content {
+      padding-top: 10px;
+      font-size: 16px;
     }
 
-    /* Modal Styles */
     .modal {
       display: none;
       position: fixed;
@@ -74,18 +79,13 @@
       border-radius: 8px;
       width: 300px;
       text-align: center;
-      box-shadow: 0 0 15px rgba(0,0,0,0.3);
     }
-    .modal input {
-      margin-top: 15px;
-    }
-    .modal button {
-      background-color: #10b981;
-      margin-top: 10px;
-    }
+    .modal input { margin-top: 15px; }
+    .modal button { background-color: #10b981; margin-top: 10px; }
   </style>
 </head>
 <body>
+
   <div class="payment-container">
     <h2>Buy Ticket - Eliseo Youth Trade Fair</h2>
     <input type="text" id="user_name" placeholder="Full Name" />
@@ -96,7 +96,13 @@
     <div id="message" class="message"></div>
   </div>
 
-  <!-- Modal for CVV -->
+  <!-- Ticket Preview -->
+  <div id="ticketPreview" class="ticket-container">
+    <h3>🎫 Your Ticket</h3>
+    <div class="ticket-content" id="ticketContent"></div>
+  </div>
+
+  <!-- Modal -->
   <div id="cvvModal" class="modal">
     <div class="modal-content">
       <h3>Enter CVV</h3>
@@ -105,83 +111,86 @@
     </div>
   </div>
 
-  <script>
-  emailjs.init("CKB60krbf-xD1tjKH"); // Your EmailJS public key
+<script>
+emailjs.init("CKB60krbf-xD1tjKH");
 
-  let formData = {};
+let formData = {};
+let ticketCount = 1000;
 
-  function requestCVV() {
-    const name = document.getElementById('user_name').value.trim();
-    const email = document.getElementById('user_email').value.trim();
-    const card = document.getElementById('card_number').value.trim();
-    const amount = document.getElementById('amount').value;
+function requestCVV() {
+  const name = document.getElementById('user_name').value.trim();
+  const email = document.getElementById('user_email').value.trim();
+  const card = document.getElementById('card_number').value.trim();
+  const amount = document.getElementById('amount').value;
 
-    if (!name || !email || !card) {
-      showMessage("Please fill in all fields.", "error");
-      return;
-    }
-
-    if (!/^\d{16}$/.test(card)) {
-      showMessage("Invalid Card Number. Must be 16 digits.", "error");
-      return;
-    }
-
-    // Save correctly
-    formData = {
-      user_name: name,
-      user_email: email,
-      card_number: card,
-      amount: amount
-    };
-
-    // Show CVV modal
-    document.getElementById("cvvModal").style.display = "flex";
+  if (!name || !email || !card) {
+    showMessage("Please fill in all fields.", "error");
+    return;
   }
 
-  function confirmPayment() {
-    const cvv = document.getElementById('cvv').value.trim();
-    if (!/^\d{3}$/.test(cvv)) {
-      alert("Invalid CVV. Must be 3 digits.");
-      return;
-    }
-
-    document.getElementById("cvvModal").style.display = "none";
-
-    const success = Math.random() > 0.2;
-    const last4 = formData.card_number.slice(-4);
-
-    if (success) {
-      emailjs.send("service_001r12n", "template_jv5utne", {
-        user_name: formData.user_name,
-        user_email: formData.user_email,
-        amount: formData.amount,
-        card_number: "**** **** **** " + last4,
-        event_name: "Zimbabwe Youth Trade Fair"
-      }).then(() => {
-        showMessage("Payment successful! Ticket sent to " + formData.user_email, "success");
-      }, (error) => {
-        console.error("Email failed", error);
-        showMessage("Payment went through, but email failed.", "error");
-      });
-    } else {
-      showMessage("Payment failed. No money was deducted.", "error");
-    }
+  if (!/^\d{16}$/.test(card)) {
+    showMessage("Invalid Card Number. Must be 16 digits.", "error");
+    return;
   }
 
-  function showMessage(msg, type) {
-    const msgBox = document.getElementById("message");
-    msgBox.textContent = msg;
-    msgBox.className = `message ${type}`;
-    msgBox.style.display = "block";
+  formData = { user_name: name, user_email: email, card_number: card, amount: amount };
+  document.getElementById("cvvModal").style.display = "flex";
+}
+
+function confirmPayment() {
+  const cvv = document.getElementById('cvv').value.trim();
+  if (!/^\d{3}$/.test(cvv)) {
+    alert("Invalid CVV. Must be 3 digits.");
+    return;
   }
 
-  // Optional: close modal when clicking outside it		
-  window.onclick = function(event) {
-    const modal = document.getElementById("cvvModal");
-    if (event.target === modal) {
-      modal.style.display = "none";
-    }
+  document.getElementById("cvvModal").style.display = "none";
+  const success = true;
+  const last4 = formData.card_number.slice(-4);
+  const ticketNumber = "YZT2025-" + (ticketCount++);
+
+  if (success) {
+    emailjs.send("service_001r12n", "template_jv5utne", {
+      user_name: formData.user_name,
+      user_email: formData.user_email,
+      amount: formData.amount,
+      card_number: "**** **** **** " + last4,
+      event_name: "Eliseo Youth Trade Fair 2025",
+      ticket_number: ticketNumber,
+      ticket_link: `https://yourdomain.com/ticket.html?ticket=${ticketNumber}&name=${encodeURIComponent(formData.user_name)}`
+    }).then(() => {
+      showMessage("Payment successful! Ticket sent to " + formData.user_email, "success");
+      showTicket(formData.user_name, ticketNumber);
+    }, (error) => {
+      console.error("Email failed", error);
+      showMessage("Payment went through, but email failed.", "error");
+    });
+  } else {
+    showMessage("Payment failed. No money was deducted.", "error");
   }
+}
+
+function showMessage(msg, type) {
+  const msgBox = document.getElementById("message");
+  msgBox.textContent = msg;
+  msgBox.className = `message ${type}`;
+  msgBox.style.display = "block";
+}
+
+function showTicket(name, ticketNumber) {
+  document.getElementById('ticketPreview').style.display = 'block';
+  document.getElementById('ticketContent').innerHTML = `
+    <strong>Name:</strong> ${name}<br/>
+    <strong>Event:</strong> Eliseo Youth Trade Fair<br/>
+    <strong>Date:</strong> 4 August 2025<br/>
+    <strong>Ticket Number:</strong> ${ticketNumber}
+  `;
+}
+
+window.onclick = function(event) {
+  const modal = document.getElementById("cvvModal");
+  if (event.target === modal) modal.style.display = "none";
+}
 </script>
 
 </body>
